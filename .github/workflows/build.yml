@@ -84,6 +84,23 @@ jobs:
           sed -i '' 's/CODE_SIGNING_ALLOWED = YES/CODE_SIGNING_ALLOWED = NO/g' ios/Runner.xcodeproj/project.pbxproj || echo "No explicit flags"
           sed -i '' 's/ProvisioningStyle = Automatic;/ProvisioningStyle = Manual;/g' ios/Runner.xcodeproj/project.pbxproj || echo "No style flags"
 
+      - name: Fix Xcode AppIcon Asset Error
+        run: |
+          mkdir -p ios/Runner/Assets.xcassets/AppIcon.appiconset
+          echo '{
+            "images" : [
+              {
+                "size" : "20x20",
+                "idiom" : "iphone",
+                "scale" : "2x"
+              }
+            ],
+            "info" : {
+              "version" : 1,
+              "author" : "xcode"
+            }
+          }' > ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json
+
       - name: Build ${{ matrix.platform }}
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
