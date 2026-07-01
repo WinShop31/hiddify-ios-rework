@@ -108,25 +108,25 @@ jobs:
             aarch: universal
             targets: dmg,pkg
             
-          # - platform: ios
-          #   os: macos-15
-          #   aarch: universal
-          #   filename: hiddify-ios
-          #   targets: ipa
+          - platform: ios
+            os: macos-15
+            aarch: universal
+            filename: hiddify-ios
+            targets: ipa
     runs-on: ${{ matrix.os }}
     steps:
       - name: checkout
         uses: actions/checkout@v6
 
       - name: Import Apple Codesign Certificates
-        if: ${{ inputs.upload-artifact && startsWith(matrix.os,'macos') }}
+        if: ${{ inputs.upload-artifact && startsWith(matrix.os,'macos') && matrix.platform != 'ios' }}
         uses: apple-actions/import-codesign-certs@v6
         with: 
             p12-file-base64: "${{ secrets.APPLE_CERTIFICATE_P12 }}"
             p12-password: "${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}"
 
       - name: Import Apple Mobile Provisioning Profile
-        if: ${{ inputs.upload-artifact && startsWith(matrix.os,'macos') }}
+        if: ${{ inputs.upload-artifact && startsWith(matrix.os,'macos') && matrix.platform != 'ios' }}
         run: |
            mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
            echo "${{secrets.APPLE_MOBILE_PROVISIONING_PROFILES_TARGZ_BASE64}}"|base64 --decode | tar xz -C ~/Library/MobileDevice/Provisioning\ Profiles
@@ -526,4 +526,3 @@ jobs:
           issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
           api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
-
